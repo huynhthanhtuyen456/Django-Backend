@@ -1,0 +1,84 @@
+version: '3'
+
+volumes:
+  postgres_data:
+
+services:
+  postgres:
+    build: ./compose/postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    env_file:
+      - ./compose/.envs/.local/.postgres
+    container_name: template-api-postgres-dev
+
+  redis:
+    image: redis:latest
+
+  django:
+    image: template-api
+    build:
+      context: .
+      dockerfile: compose/django/Dockerfile-dev
+    container_name: template-api-django-dev
+    command: /start-dev.sh
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.local
+    env_file:
+      - ./compose/.envs/.local/.postgres
+      - ./config/settings/.env
+    volumes:
+      - .:/app
+    links:
+      - postgres
+      - redis
+
+  celeryworker:
+    image: template-api
+    command: /start-celery-worker.sh
+    container_name: template-api-celeryworker-dev
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.local
+    env_file:
+      - ./compose/.envs/.local/.postgres
+      - ./config/settings/.env
+    volumes:
+      - .:/app
+    links:
+      - postgres
+      - redis
+
+  celerybeat:
+    image: template-api
+    command: /start-celery-beat.sh
+    container_name: template-api-celerybeat-dev
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.local
+    env_file:
+      - ./compose/.envs/.local/.postgres
+      - ./config/settings/.env
+    volumes:
+      - .:/app
+    links:
+      - postgres
+      - redis
+
+  nginx:
+    image: nginx
+    volumes:
+      - ./compose/nginx/conf.d:/etc/nginx/conf.d
+      - .:/app
+    links:
+      - django
+    ports:
+      - 8000:80
