@@ -1,0 +1,22 @@
+{
+  "config": {
+    "env": "{env}",
+    "profile": "{profile}",
+    "region": "{region}",
+    "account_id": "{account_id}",
+    "ssh_key_name": "{ssh_key_name}",
+    "ubuntu_ami": "{ubuntu_ami}",
+    "domain": "{domain}",
+    "db_name": "{db_name}",
+    "db_username": "{db_username}",
+    "db_password": "{db_password}",
+    "vpc.cidr_block": "10.0.0.0/16",
+    "subnet.subnet_public_b.cidr_block": "10.0.64.0/20",
+    "subnet.subnet_public_c.cidr_block": "10.0.80.0/20",
+    "subnet.subnet_b.cidr_block": "10.0.16.0/20",
+    "subnet.subnet_c.cidr_block": "10.0.32.0/20"
+  },
+  "arns": [
+
+  ]
+}
